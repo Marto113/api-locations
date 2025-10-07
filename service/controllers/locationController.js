@@ -1,12 +1,17 @@
-import { Location } from '../types/location';
-import { PrismaClient } from '@prisma/client'; 
+import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
-export const getLocations = (req, res) => {
-    // TODO - Fetch locations from db
-    // return list of locations only returning id, name, latitude, longitude
-    prisma.get.
-    res.json();
+export const getLocations = async (req, res) => {
+    try {
+        const list = await prisma.location.findMany({
+            select: { id: true, name: true, latitude: true, longitude: true }
+        });
+        return res.json(list);
+    } catch (err) {
+        console.error('getLocations error', err);
+        return res.status(500).json({ error: 'Failed to fetch locations' });
+    }
 }
 
 export const createLocation = async (req, res) => {
@@ -34,7 +39,8 @@ export const createLocation = async (req, res) => {
 
         res.status(201).json(created);
     } catch (err) {
-        console.error('createLocation error', err);
+            console.error('createLocation error', err && err.message);
+            if (err && err.stack) console.error(err.stack);
         res.status(500).json({ error: 'Failed to create location' });
     }
 }

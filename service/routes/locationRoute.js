@@ -9,8 +9,8 @@ import {
 const locationRouter = Router();
 
 locationRouter.get('/locations', getLocations);
-locationRouter.get('/locations/:user_id', getLocationByUser);
 locationRouter.get('/locations/:id', getLocationMetadata);
+locationRouter.get('/locations/:user_id', getLocationByUser);
 locationRouter.post('/locations', createLocation);
 
 export default locationRouter;

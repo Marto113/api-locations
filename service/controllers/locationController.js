@@ -45,10 +45,30 @@ export const createLocation = async (req, res) => {
     }
 }
 
-export const getLocationMetadata = (req, res) => {
-    // TODO - Fetch metadata for a specific location
-    // return all fields for a location by id including the user who created it
-    res.json();
+export const getLocationMetadata = async (req, res) => {
+    // Fetch metadata for a specific location by its id (UUID)
+    const { id } = req.params || {};
+    if (!id) {
+        return res.status(400).json({ error: 'Missing location id' });
+    }
+
+    try {
+        // id is a String UUID in the Prisma schema, do not coerce to Number
+        const location = await prisma.location.findUnique({
+            where: { id },
+        });
+
+        if (!location) {
+            return res.status(404).json({ error: 'Location with this ID not found' });
+        }
+
+        return res.json(location);
+    } catch (err) {
+        console.error('getLocationMetadata error', err && err.message);
+        if (err && err.stack) console.error(err.stack);
+        return res.status(500).json({ error: 'Failed to fetch location metadata' });
+    }
+
 }
 
 export const getLocationByUser = (req, res) => {
